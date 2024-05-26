@@ -3,3 +3,7 @@ Raspberry Pi               BNO085
 3 (SDA)                    SDA
 5 (SCL)                    SCL
 6 (GND)                    GND
+
+Raspberry Pi               Red LED
+34 (GND)                   -
+36 (GPIO16)                +
