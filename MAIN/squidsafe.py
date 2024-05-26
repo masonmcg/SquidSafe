@@ -2,6 +2,7 @@ import time
 import board
 import busio
 import math
+import digitalio
 
 from adafruit_bno08x import (
     # BNO_REPORT_ACCELEROMETER,
@@ -12,7 +13,7 @@ from adafruit_bno08x import (
 
 from adafruit_bno08x.i2c import BNO08X_I2C
 
-i2c = busio.I2C(board.SCL, board.SDA, frequency=400000)
+i2c = busio.I2C(board.SCL, board.SDA) # frequency=400000
 bno = BNO08X_I2C(i2c, address=0x4B)  # Updated address to 0x4B
 
 # bno.enable_feature(BNO_REPORT_ACCELEROMETER)
@@ -20,8 +21,12 @@ bno = BNO08X_I2C(i2c, address=0x4B)  # Updated address to 0x4B
 # bno.enable_feature(BNO_REPORT_MAGNETOMETER)
 bno.enable_feature(BNO_REPORT_ROTATION_VECTOR)
 
+# Set up the LED on GPIO pin 16
+led = digitalio.DigitalInOut(board.D16)
+led.direction = digitalio.Direction.OUTPUT
+
 while True:
-    time.sleep(0.5)
+    time.sleep(0.1)
     # print("Acceleration:")
     # accel_x, accel_y, accel_z = bno.acceleration  # pylint:disable=no-member
     # print("X: %0.6f  Y: %0.6f Z: %0.6f  m/s^2" % (accel_x, accel_y, accel_z))
@@ -70,3 +75,13 @@ while True:
     print("Euler Angles:")
     print("Roll: %0.6f  Pitch: %0.6f  Yaw: %0.6f degrees" % (roll_deg, pitch_deg, yaw_deg))
     print("")
+    
+     # Turn on the LED if yaw angle is above 20 degrees
+    if pitch_deg > 20:
+        led.value = True
+    else:
+        led.value = False
+    
+    
+    
+    
