@@ -1,0 +1,5 @@
+Raspberry Pi               BNO085
+1 (3V3)                    VCC
+3 (SDA)                    SDA
+5 (SCL)                    SCL
+6 (GND)                    GND
