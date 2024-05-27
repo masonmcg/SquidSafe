@@ -1,9 +1,23 @@
 Raspberry Pi               BNO085
-1 (3V3)                    VCC
+X (3V3)                    VCC
 3 (SDA)                    SDA
 5 (SCL)                    SCL
-6 (GND)                    GND
+X (GND)                    GND
 
 Raspberry Pi               Red LED
 34 (GND)                   -
 36 (GPIO16)                +
+
+Raspberry Pi               LCD Screen
+X (GND)                    1 (Vss)
+X (3V3)                    2 (Vdd)
+NO CONNECT                 3 (NC)
+37 (GPIO26)                4 (RS)
+X (GND)                    5 (R/W)
+35 (GPIO19)                6 (E)
+33 (GPIO13)                11 (DB4)
+31 (GPIO6)                 12 (DB5)
+29 (GPIO5)                 13 (DB6)
+27 (GPIO0)                 14 (DB7)
+X (3V3)                    15 (LED+) plus 2k series resistance
+X (GND)                    16 (LED-)
