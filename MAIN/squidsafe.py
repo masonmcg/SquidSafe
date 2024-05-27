@@ -15,6 +15,7 @@ lcd_d5 = digitalio.DigitalInOut(board.D6)
 lcd_d6 = digitalio.DigitalInOut(board.D5)
 lcd_d7 = digitalio.DigitalInOut(board.D0)
 lcd = characterlcd.Character_LCD_Mono(lcd_rs, lcd_en, lcd_d4, lcd_d5, lcd_d6, lcd_d7, lcd_columns, lcd_rows)
+lcd.clear()
 
 # Setup IMU stuff
 from adafruit_bno08x import (BNO_REPORT_ROTATION_VECTOR)
@@ -26,6 +27,13 @@ bno.enable_feature(BNO_REPORT_ROTATION_VECTOR)
 # Setup LED stuff
 led = digitalio.DigitalInOut(board.D16)
 led.direction = digitalio.Direction.OUTPUT
+
+# Setup button stuff
+button_blue = digitalio.DigitalInOut(board.D21)
+button_blue.direction = digitalio.Direction.INPUT
+button_red = digitalio.DigitalInOut(board.D20)
+button_red.direction = digitalio.Direction.INPUT
+
 
 while True:
     time.sleep(0.1)
@@ -41,16 +49,24 @@ while True:
 
     # Convert radians to degrees
     pitch_deg = math.degrees(pitch)
-
-    lcd.clear()
-    lcd.message = "Angle: {:.2f}".format(pitch_deg)
     
      # Turn on the LED if yaw angle is above 20 degrees
     if pitch_deg > 20:
         led.value = True
+        lcd.clear()
+        lcd.message = "Angle: {:.2f}".format(pitch_deg)
         lcd.message = "\nLED ON"
     else:
         led.value = False
+        lcd.clear()
+        lcd.message = "Angle: {:.2f}".format(pitch_deg)
         lcd.message = "\nLED OFF"
         
-    
+    # Check button presses
+    if button_blue.value:
+        lcd.clear()
+        lcd.message = "Blue Button"
+    elif button_red.value:
+        lcd.clear()
+        lcd.message = "Red Button"
+  
