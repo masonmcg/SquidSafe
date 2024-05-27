@@ -21,3 +21,11 @@ X (GND)                    5 (R/W)
 27 (GPIO0)                 14 (DB7)
 X (3V3)                    15 (LED+) plus 2k series resistance
 X (GND)                    16 (LED-)
+
+Raspberry Pi               Red Button
+38 (GPIO20)                -
+X (3V3)                    + plus 5k series resistance
+
+Raspberry Pi               Blue Button
+40 (GPIO21)                -
+X (3V3)                    + plus 5k series resistance
