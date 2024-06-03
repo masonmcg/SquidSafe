@@ -27,6 +27,8 @@ bno.enable_feature(BNO_REPORT_ROTATION_VECTOR)
 # Setup LED stuff
 led = digitalio.DigitalInOut(board.D16)
 led.direction = digitalio.Direction.OUTPUT
+led_blue = digitalio.DigitalInOut(board.D18)
+led_blue.direction = digitalio.Direction.OUTPUT
 
 # Setup button stuff
 blue_button = digitalio.DigitalInOut(board.D21)
@@ -41,28 +43,55 @@ wheelie_angle = 20; # Wheelie angle in degrees
 def enable_system():
 	
 	global wheelie_angle
-    
-    # Screen 1
+	
+	# Screen 1
 	lcd.clear()
 	lcd.message = "System enabled"
 	lcd.message += "\nAngle: {:.2f}".format(wheelie_angle)
-    
-    # Sleep initially to avoid multiple button presses
+	
+	# Sleep initially to avoid multiple button presses
 	time.sleep(1)
-    
+	
+	f = open("/home/mason/Desktop/CPE542/SquidSafe/MAIN/angle_log.txt","a")
+	
+	last_time_us = None
+	
 	while True:
 		
 		for i in range(400):
+			led_blue.value = True
 			pitch_deg = get_pitch_angle()
+			led_blue.value = False
+			
+			
+			
+			# Get the current time in microseconds
+			current_time_us = int(time.time() * 1_000_000)
+
+			if last_time_us is None:
+				elapsed_time_us = 0  # For the first entry, elapsed time is 0
+			else:
+				elapsed_time_us = current_time_us - last_time_us
+
+			# Write the timestamp, elapsed time, and angle to the file
+			f.write(f"{current_time_us}, {elapsed_time_us}, {pitch_deg:.2f}\n")
+
+			# Update last_time_us to the current time
+			last_time_us = current_time_us
+			
+			
+			
+			
 			# Turn on the LED if pitch angle is above wheelie_angle
 			if pitch_deg > wheelie_angle:
 				led.value = True
 			else:
 				led.value = False
-			time.sleep(0.0025)
-        
+			time.sleep(0.002)
+		
 		# If button pressed
 		if blue_button.value or red_button.value:
+			f.close()
 			return
 
 
