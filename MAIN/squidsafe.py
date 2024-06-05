@@ -5,13 +5,10 @@ import math
 import digitalio
 import adafruit_character_lcd.character_lcd as characterlcd
 
-# Delay on start to avoid OS error
-time.sleep(2)  # 2-second delay
-
 # Setup LCD stuff
 lcd_columns = 16
 lcd_rows = 2
-lcd_rs = digitalio.DigitalInOut(board.D26)
+lcd_rs = digitalio.DigitalInOut(board.D11)
 lcd_en = digitalio.DigitalInOut(board.D19)
 lcd_d4 = digitalio.DigitalInOut(board.D13)
 lcd_d5 = digitalio.DigitalInOut(board.D6)
