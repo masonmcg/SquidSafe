@@ -1,14 +1,39 @@
+import subprocess
+import gpiod
 import time
 import board
 import busio
 import math
 import digitalio
 import adafruit_character_lcd.character_lcd as characterlcd
+import atexit
+
+# Function to release all GPIOs
+def release_all_gpio():
+    chip = gpiod.Chip('gpiochip0')
+    for line in chip.get_all_lines():
+        line.release()
+
+# Function to check GPIO status
+def check_gpio_status():
+    try:
+        result = subprocess.run(['gpioinfo'], capture_output=True, text=True)
+        print(result.stdout)
+    except Exception as e:
+        print(f"Error checking GPIO status: {e}")
+
+# Release all GPIOs at the very beginning
+release_all_gpio()
+atexit.register(release_all_gpio)
+
+# Check GPIO status at the start
+print("GPIO status at start:")
+check_gpio_status()
 
 # Setup LCD stuff
 lcd_columns = 16
 lcd_rows = 2
-lcd_rs = digitalio.DigitalInOut(board.D11)
+lcd_rs = digitalio.DigitalInOut(board.D12)
 lcd_en = digitalio.DigitalInOut(board.D19)
 lcd_d4 = digitalio.DigitalInOut(board.D13)
 lcd_d5 = digitalio.DigitalInOut(board.D6)
