@@ -5,6 +5,9 @@ import math
 import digitalio
 import adafruit_character_lcd.character_lcd as characterlcd
 
+# Delay on start to avoid OS error
+time.sleep(2)  # 2-second delay
+
 # Setup LCD stuff
 lcd_columns = 16
 lcd_rows = 2
@@ -52,9 +55,11 @@ def enable_system():
 	# Sleep initially to avoid multiple button presses
 	time.sleep(1)
 	
+	# File recorder stuff
+	"""
 	f = open("/home/mason/Desktop/CPE542/SquidSafe/MAIN/angle_log.txt","a")
-	
 	last_time_us = None
+	"""
 	
 	while True:
 		
@@ -63,8 +68,8 @@ def enable_system():
 			pitch_deg = get_pitch_angle()
 			led_blue.value = False
 			
-			
-			
+			# File recorder stuff
+			"""
 			# Get the current time in microseconds
 			current_time_us = int(time.time() * 1_000_000)
 
@@ -78,9 +83,7 @@ def enable_system():
 
 			# Update last_time_us to the current time
 			last_time_us = current_time_us
-			
-			
-			
+			"""
 			
 			# Turn on the LED if pitch angle is above wheelie_angle
 			if pitch_deg > wheelie_angle:
@@ -91,7 +94,10 @@ def enable_system():
 		
 		# If button pressed
 		if blue_button.value or red_button.value:
+			# File recorder stuff
+			"""
 			f.close()
+			"""
 			return
 
 
