@@ -5,8 +5,12 @@ X (3V3)                    VCC
 X (GND)                    GND
 
 Raspberry Pi               Red LED
-34 (GND)                   -
+X  (GND)                   -
 36 (GPIO16)                +
+
+Raspberry Pi               Blue LED
+X  (GND)                   -
+32 (GPIO12)                +
 
 Raspberry Pi               LCD Screen
 X (GND)                    1 (Vss)
@@ -29,3 +33,7 @@ X (3V3)                    + plus 5k series resistance
 Raspberry Pi               Blue Button
 40 (GPIO21)                -
 X (3V3)                    + plus 5k series resistance
+
+Raspberry Pi               Spark Cut Relay
+12 (GPIO18)                +
+X  (GND)                   -

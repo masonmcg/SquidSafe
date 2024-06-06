@@ -8,6 +8,20 @@ import busio
 import math
 import adafruit_character_lcd.character_lcd as characterlcd
 
+"""
+NOTES:
+display current angle on disabled screen, also incorporate exact angle offset
+also maybe include calibration on the disabled screen as well
+
+need faster switching, maybe try to get raw angle data and use that instead of corrected data
+
+also probably need faster switching relay as well
+
+also add new pins and stuff to the pinout schematic file
+
+also fix the weird stuff in the start screen loop and just have a mian loop that does everything
+"""
+
 # Sleep to let other start stuff happen
 time.sleep(1)
 
@@ -155,15 +169,7 @@ def start_screen():
 	lcd.message = "\nAngle: {:.2f}".format(wheelie_angle)
 	
 	# Sleep initially to avoid multiple button presses
-	time.sleep(2)
-	
-	# Screen 2
-	lcd.clear()
-	lcd.message = "Blue - angle"
-	lcd.message = "\nRed - enable"
-	
-	# Sleep initially to avoid multiple button presses
-	time.sleep(2)
+	time.sleep(1)
 	
 	while True:
 	
@@ -197,6 +203,31 @@ def start_screen():
 		lcd.message = "Blue - angle"
 		lcd.message = "\nRed - enable"
     
+		# Wait 2 seconds while checking for button press
+		for i in range(20):
+			if blue_button.value:
+				change_angle()
+				# On return from change_angle, display screen 1
+				# And sleep to avoid multiple button presses
+				lcd.clear()
+				lcd.message = "System disabled"
+				lcd.message = "\nAngle: {:.2f}".format(wheelie_angle)
+				time.sleep(1)
+			elif red_button.value:
+				enable_system()
+				# On return from enable_ststem, display screen 1
+				# And sleep to avoid multiple button presses
+				lcd.clear()
+				lcd.message = "System disabled"
+				lcd.message = "\nAngle: {:.2f}".format(wheelie_angle)
+				time.sleep(1)
+			time.sleep(0.1)
+			
+		# Screen 3
+		lcd.clear()
+		lcd.message = "Current angle"
+		lcd.message += "\n{:.2f} degrees".format(get_pitch_angle())
+
 		# Wait 2 seconds while checking for button press
 		for i in range(20):
 			if blue_button.value:
