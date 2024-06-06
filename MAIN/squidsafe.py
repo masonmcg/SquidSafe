@@ -86,7 +86,7 @@ def enable_system():
 		led_blue.value = True
 		
 		for i in range(400):
-			pitch_deg = get_pitch_angle * -1
+			pitch_deg = get_pitch_angle()
 			
 			# File recorder stuff
 			"""
@@ -140,7 +140,7 @@ def get_pitch_angle():
     # Convert radians to degrees
     pitch_deg = math.degrees(pitch)
     
-    return pitch_deg
+    return -pitch_deg
 
 
 # Displays start screen and calls next function based on input
