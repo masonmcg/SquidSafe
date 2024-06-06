@@ -2,38 +2,31 @@ import subprocess
 import gpiod
 import time
 import board
+import digitalio
+import atexit
 import busio
 import math
-import digitalio
 import adafruit_character_lcd.character_lcd as characterlcd
-import atexit
 
-# Function to release all GPIOs
-def release_all_gpio():
+# Sleep to let other start stuff happen
+time.sleep(1)
+
+# Function to forcefully reset specified GPIO pins using libgpiod
+def reset_gpio_pins():
     chip = gpiod.Chip('gpiochip0')
     for line in chip.get_all_lines():
-        line.release()
+        try:
+            line.release()
+        except OSError as e:
+            print(f"Error releasing pin {line.offset()}: {e}")
 
-# Function to check GPIO status
-def check_gpio_status():
-    try:
-        result = subprocess.run(['gpioinfo'], capture_output=True, text=True)
-        print(result.stdout)
-    except Exception as e:
-        print(f"Error checking GPIO status: {e}")
-
-# Release all GPIOs at the very beginning
-release_all_gpio()
-atexit.register(release_all_gpio)
-
-# Check GPIO status at the start
-print("GPIO status at start:")
-check_gpio_status()
+# Reset GPIO pins at the start of the program
+reset_gpio_pins()
 
 # Setup LCD stuff
 lcd_columns = 16
 lcd_rows = 2
-lcd_rs = digitalio.DigitalInOut(board.D12)
+lcd_rs = digitalio.DigitalInOut(board.D26)
 lcd_en = digitalio.DigitalInOut(board.D19)
 lcd_d4 = digitalio.DigitalInOut(board.D13)
 lcd_d5 = digitalio.DigitalInOut(board.D6)
@@ -50,9 +43,9 @@ bno = BNO08X_I2C(i2c, address=0x4B)  # Updated address to 0x4B
 bno.enable_feature(BNO_REPORT_ROTATION_VECTOR)
 
 # Setup LED stuff
-led = digitalio.DigitalInOut(board.D16)
-led.direction = digitalio.Direction.OUTPUT
-led_blue = digitalio.DigitalInOut(board.D18)
+led_red = digitalio.DigitalInOut(board.D16)
+led_red.direction = digitalio.Direction.OUTPUT
+led_blue = digitalio.DigitalInOut(board.D12)
 led_blue.direction = digitalio.Direction.OUTPUT
 
 # Setup button stuff
@@ -60,6 +53,11 @@ blue_button = digitalio.DigitalInOut(board.D21)
 blue_button.direction = digitalio.Direction.INPUT
 red_button = digitalio.DigitalInOut(board.D20)
 red_button.direction = digitalio.Direction.INPUT
+
+# Setup spark cut relay stuff
+spark = digitalio.DigitalInOut(board.D18)
+spark.direction = digitalio.Direction.OUTPUT
+spark.value = True
 
 # Setup variables
 wheelie_angle = 20; # Wheelie angle in degrees
@@ -85,10 +83,10 @@ def enable_system():
 	
 	while True:
 		
+		led_blue.value = True
+		
 		for i in range(400):
-			led_blue.value = True
-			pitch_deg = get_pitch_angle()
-			led_blue.value = False
+			pitch_deg = get_pitch_angle * -1
 			
 			# File recorder stuff
 			"""
@@ -109,9 +107,11 @@ def enable_system():
 			
 			# Turn on the LED if pitch angle is above wheelie_angle
 			if pitch_deg > wheelie_angle:
-				led.value = True
+				led_red.value = True
+				spark.value = False
 			else:
-				led.value = False
+				led_red.value = False
+				spark.value = True
 			time.sleep(0.002)
 		
 		# If button pressed
@@ -120,6 +120,8 @@ def enable_system():
 			"""
 			f.close()
 			"""
+			spark.value = True
+			led_blue.value = False
 			return
 
 
@@ -270,7 +272,19 @@ def change_angle():
         
         # Sleep to not do stuff constantly
 		time.sleep(0.05)
+		
 
+# Does all this on program exit for any reason
+# Releases all gpio pins except for the spark one, it keeps that on
+def exit_stuff():
+	reset_gpio_pins()
+	# Setup spark cut relay stuff
+	spark = digitalio.DigitalInOut(board.D18)
+	spark.direction = digitalio.Direction.OUTPUT
+	spark.value = True
+	
+# Ensure GPIO pins are reset at program exit and spark on
+atexit.register(exit_stuff)
 
 # Start logic
 start_screen()
